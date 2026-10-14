@@ -1,0 +1,457 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>ИнфраСАР — Уренгой</title>
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" crossorigin="">
+  <style>
+    :root {
+      --bg: #f2ede4;
+      --panel: rgba(255, 252, 246, 0.94);
+      --ink: #112521;
+      --muted: #5f6e69;
+      --line: rgba(17, 37, 33, 0.12);
+      --accent: #0f766e;
+      --accent-2: #9a3412;
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; height: 100%; }
+    body {
+      font-family: "Segoe UI Variable", "Segoe UI", sans-serif;
+      color: var(--ink);
+      background:
+        radial-gradient(circle at top left, rgba(15, 118, 110, 0.18), transparent 28%),
+        radial-gradient(circle at bottom right, rgba(154, 52, 18, 0.12), transparent 26%),
+        linear-gradient(180deg, #f7f2e9 0%, #ede4d8 100%);
+    }
+    .layout {
+      display: grid;
+      grid-template-columns: 420px 1fr;
+      gap: 16px;
+      height: 100%;
+      padding: 16px;
+    }
+    .panel, #map {
+      border-radius: 22px;
+      overflow: hidden;
+      border: 1px solid var(--line);
+      background: var(--panel);
+      box-shadow: 0 20px 54px rgba(17, 37, 33, 0.14);
+    }
+    .panel {
+      display: flex;
+      flex-direction: column;
+      min-height: 0;
+    }
+    .hero {
+      padding: 22px 22px 16px;
+      border-bottom: 1px solid var(--line);
+      background: linear-gradient(135deg, rgba(15, 118, 110, 0.10), rgba(154, 52, 18, 0.08));
+    }
+    .hero h1 { margin: 0; font-size: 28px; line-height: 1.05; }
+    .hero p { margin: 10px 0 0; color: var(--muted); font-size: 14px; line-height: 1.5; }
+    .scroll { overflow: auto; padding: 20px 22px 24px; }
+    .section + .section { margin-top: 22px; }
+    .section h2 {
+      margin: 0 0 10px;
+      font-size: 13px;
+      text-transform: uppercase;
+      letter-spacing: 0.12em;
+      color: var(--muted);
+    }
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .stat, .point-card {
+      padding: 12px 14px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.64);
+    }
+    .stat small, .meta-label { display: block; color: var(--muted); margin-bottom: 4px; font-size: 12px; }
+    .stat strong { font-size: 18px; }
+    .controls { display: grid; gap: 10px; }
+    .controls label { display: grid; gap: 6px; font-size: 13px; color: var(--muted); }
+    .controls input, .controls select {
+      width: 100%;
+      border-radius: 12px;
+      border: 1px solid var(--line);
+      padding: 10px 12px;
+      background: rgba(255, 255, 255, 0.82);
+      color: var(--ink);
+      font: inherit;
+    }
+    .row {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .actions {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 12px;
+    }
+    .button {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: 10px 14px;
+      border-radius: 999px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.76);
+      color: var(--ink);
+      text-decoration: none;
+      font-size: 13px;
+      cursor: pointer;
+    }
+    .button.primary {
+      background: linear-gradient(135deg, #0f766e, #115e59);
+      color: #f7fffe;
+      border-color: transparent;
+    }
+    .point-grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 10px;
+    }
+    .chart-wrap {
+      margin-top: 14px;
+      padding: 12px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: rgba(17, 37, 33, 0.03);
+    }
+    #chart { width: 100%; height: 220px; display: block; }
+    #mapWrap { position: relative; min-width: 0; }
+    #map { width: 100%; height: 100%; }
+    .legend {
+      position: absolute;
+      right: 16px;
+      bottom: 16px;
+      z-index: 500;
+      width: 210px;
+      padding: 14px;
+      border-radius: 16px;
+      border: 1px solid var(--line);
+      background: rgba(255, 252, 246, 0.94);
+    }
+    .legend-bar {
+      height: 12px;
+      border-radius: 999px;
+      background: linear-gradient(90deg, #0b4f6c 0%, #2c7fb8 20%, #7fcdbb 40%, #f6f4d2 50%, #f7b267 70%, #d95d39 84%, #7f0000 100%);
+    }
+    .legend-labels {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 8px;
+      font-size: 12px;
+      color: var(--muted);
+      font-family: Consolas, monospace;
+    }
+    .hint { margin-top: 10px; font-size: 13px; color: var(--muted); line-height: 1.45; }
+    @media (max-width: 980px) {
+      .layout {
+        grid-template-columns: 1fr;
+        grid-template-rows: minmax(420px, 46vh) 1fr;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="layout">
+    <aside class="panel">
+      <div class="hero">
+        <h1>ИнфраСАР — Уренгой</h1>
+        <p>Карта спутниково измеряемой деформации по постоянным отражателям. По клику на любую точку открывается полный временной ряд смещений.</p>
+      </div>
+      <div class="scroll">
+        <section class="section">
+          <h2>Сводка</h2>
+          <div class="stats" id="stats"></div>
+        </section>
+        <section class="section">
+          <h2>Отображение</h2>
+          <div class="controls">
+            <label>Показатель на карте
+              <select id="colorMode">
+                <option value="velocity">Скорость деформации LOS, мм/год</option>
+                <option value="cumulative">Накопленное смещение LOS, мм</option>
+              </select>
+            </label>
+            <label>Минимальный уровень риска
+              <select id="riskFilter">
+                <option value="0">Показать все</option>
+                <option value="1">От Наблюдения</option>
+                <option value="2">От Повышенного внимания</option>
+                <option value="3">Только Критично</option>
+              </select>
+            </label>
+            <label>Размер точек
+              <input id="pointSize" type="range" min="2" max="12" step="1" value="4">
+            </label>
+          </div>
+          <div class="actions">
+            <button class="button" id="resetFilter" type="button">Сбросить фильтры</button>
+          </div>
+          <div class="actions">
+            <a class="button" href="./velocity_points.geojson" download>Скачать GeoJSON</a>
+            <a class="button" href="./executive_summary.json" download>Скачать summary</a>
+            <a class="button" href="./executive_brief.md" download>Скачать brief</a>
+          </div>
+          <div class="hint">Показаны технически защищаемые спутниковые метрики: скорость деформации LOS в мм/год и накопленное смещение LOS в мм к последней дате наблюдений.</div>
+        </section>
+        <section class="section">
+          <h2>Наиболее проблемные отражатели</h2>
+          <div id="topList" class="point-card"></div>
+        </section>
+        <section class="section">
+          <h2>Выбранный отражатель</h2>
+          <div class="point-card">
+            <div id="pointTitle"><strong>Отражатель не выбран</strong></div>
+            <div class="point-grid" id="pointGrid" style="margin-top:12px"></div>
+            <div class="chart-wrap">
+              <canvas id="chart" width="720" height="220"></canvas>
+            </div>
+            <div class="hint" id="pointHint">Выбери точку на карте или из списка, чтобы увидеть полный временной ряд смещений.</div>
+          </div>
+        </section>
+      </div>
+    </aside>
+    <main id="mapWrap">
+      <div id="map"></div>
+      <div class="legend">
+        <div id="legendTitle" style="font-size:12px;text-transform:uppercase;letter-spacing:0.12em;color:var(--muted);margin-bottom:10px;">Скорость деформации LOS, мм/год</div>
+        <div class="legend-bar"></div>
+        <div class="legend-labels">
+          <span id="legendMin"></span>
+          <span id="legendMid"></span>
+          <span id="legendMax"></span>
+        </div>
+      </div>
+    </main>
+  </div>
+  <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" crossorigin=""></script>
+  <script src="./portal_points.js"></script>
+  <script>
+    (() => {
+      if (!window.L || !window.STAMPS_PORTAL_DATA) {
+        document.body.innerHTML = "<div style='padding:24px;font:16px Segoe UI,sans-serif'>Leaflet or portal data did not load.</div>";
+        return;
+      }
+      const data = window.STAMPS_PORTAL_DATA;
+      const palette = ["#0b4f6c", "#2c7fb8", "#7fcdbb", "#f6f4d2", "#f7b267", "#d95d39", "#7f0000"];
+      const labels = { velocity: "Скорость деформации LOS, мм/год", cumulative: "Накопленное смещение LOS, мм" };
+      const map = L.map("map", { preferCanvas: true });
+      const osm = L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png", { attribution: "&copy; OpenStreetMap contributors", maxZoom: 19 });
+      const esri = L.tileLayer("https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/{z}/{y}/{x}", { attribution: "Tiles &copy; Esri", maxZoom: 19 });
+      osm.addTo(map);
+      L.control.layers({ "OpenStreetMap": osm, "World Imagery": esri }, null, { position: "topleft" }).addTo(map);
+      const bbox = data.metadata.bbox;
+      map.fitBounds([[bbox[1], bbox[0]], [bbox[3], bbox[2]]], { padding: [20, 20] });
+
+      const statsEl = document.getElementById("stats");
+      const colorModeEl = document.getElementById("colorMode");
+      const riskFilterEl = document.getElementById("riskFilter");
+      const pointSizeEl = document.getElementById("pointSize");
+      const legendTitleEl = document.getElementById("legendTitle");
+      const legendMinEl = document.getElementById("legendMin");
+      const legendMidEl = document.getElementById("legendMid");
+      const legendMaxEl = document.getElementById("legendMax");
+      const topListEl = document.getElementById("topList");
+      const pointTitleEl = document.getElementById("pointTitle");
+      const pointGridEl = document.getElementById("pointGrid");
+      const pointHintEl = document.getElementById("pointHint");
+      const chart = document.getElementById("chart");
+      const ctx = chart.getContext("2d");
+      let layer = null;
+      let selectedPsIndex = null;
+
+      function fmt(value, digits = 3) {
+        return Number(value).toFixed(digits);
+      }
+
+      function buildStats() {
+        const risk = data.executive_summary.counts_by_risk;
+        const items = [
+          ["Точек PS", data.summary.n_ps_final],
+          ["Период", data.executive_summary.monitoring_period.start + " - " + data.executive_summary.monitoring_period.end],
+          ["|Скорость|, максимум", fmt(data.executive_summary.max_abs_velocity_mm_yr) + " мм/год"],
+          ["|Смещение|, максимум", fmt(data.executive_summary.max_abs_cumulative_los_mm) + " мм"],
+          ["Критично", risk.critical],
+          ["Повышенное внимание", risk.elevated_attention],
+        ];
+        statsEl.innerHTML = items.map(([label, value]) => `<div class="stat"><small>${label}</small><strong>${value}</strong></div>`).join("");
+      }
+
+      function buildTopList() {
+        topListEl.innerHTML = data.top_points.map((point) => `
+          <div style="padding:10px 0;border-bottom:1px solid rgba(17,37,33,0.08);cursor:pointer" data-ps="${point.ps_index}">
+            <div style="font-weight:600">PS ${point.ps_index} · ${point.risk_label}</div>
+            <div style="font-size:13px;color:#5f6e69;margin-top:3px">
+              |v|=${fmt(Math.abs(point.velocity_mm_yr), 2)} мм/год · накопленное=${fmt(point.cumulative_los_mm, 1)} мм
+            </div>
+          </div>
+        `).join("");
+        for (const el of topListEl.querySelectorAll("[data-ps]")) {
+          el.addEventListener("click", () => {
+            const row = data.points.find((item) => Number(item[0]) === Number(el.dataset.ps));
+            if (row) showPoint(row);
+          });
+        }
+      }
+
+      function hexToRgb(hex) {
+        const c = hex.replace("#", "");
+        return [parseInt(c.slice(0, 2), 16), parseInt(c.slice(2, 4), 16), parseInt(c.slice(4, 6), 16)];
+      }
+
+      function colorFor(value, min, max) {
+        if (!Number.isFinite(value) || max <= min) {
+          return palette[Math.floor(palette.length / 2)];
+        }
+        const t = Math.max(0, Math.min(1, (value - min) / (max - min)));
+        const scaled = t * (palette.length - 1);
+        const i = Math.floor(scaled);
+        const frac = scaled - i;
+        const a = hexToRgb(palette[Math.min(i, palette.length - 1)]);
+        const b = hexToRgb(palette[Math.min(i + 1, palette.length - 1)]);
+        const rgb = [0, 1, 2].map((j) => Math.round(a[j] + (b[j] - a[j]) * frac));
+        return `rgb(${rgb[0]}, ${rgb[1]}, ${rgb[2]})`;
+      }
+
+      function rangeFor(mode) {
+        const maxAbs = mode === "velocity"
+          ? Math.max(Math.abs(data.metadata.velocity_min), Math.abs(data.metadata.velocity_max))
+          : Math.max(Math.abs(data.metadata.cumulative_min), Math.abs(data.metadata.cumulative_max));
+        return [-maxAbs, maxAbs];
+      }
+
+      function drawSeries(row) {
+        const values = row.slice(6);
+        const labels = data.date_labels;
+        ctx.clearRect(0, 0, chart.width, chart.height);
+        ctx.fillStyle = "#fffdf8";
+        ctx.fillRect(0, 0, chart.width, chart.height);
+        if (!values.length) {
+          ctx.fillStyle = "#5f6e69";
+          ctx.font = "14px Segoe UI";
+          ctx.fillText("Временной ряд недоступен.", 20, 36);
+          return;
+        }
+        const pad = { left: 52, right: 18, top: 12, bottom: 30 };
+        const minY = Math.min(...values);
+        const maxY = Math.max(...values);
+        const spanY = Math.max(1e-6, maxY - minY);
+        const count = values.length;
+        ctx.strokeStyle = "rgba(17, 37, 33, 0.12)";
+        for (let i = 0; i < 4; i += 1) {
+          const y = pad.top + ((chart.height - pad.top - pad.bottom) / 3) * i;
+          ctx.beginPath();
+          ctx.moveTo(pad.left, y);
+          ctx.lineTo(chart.width - pad.right, y);
+          ctx.stroke();
+        }
+        ctx.strokeStyle = "#0f766e";
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        values.forEach((value, idx) => {
+          const x = pad.left + (idx / Math.max(1, count - 1)) * (chart.width - pad.left - pad.right);
+          const y = chart.height - pad.bottom - ((value - minY) / spanY) * (chart.height - pad.top - pad.bottom);
+          if (idx === 0) ctx.moveTo(x, y); else ctx.lineTo(x, y);
+        });
+        ctx.stroke();
+        ctx.fillStyle = "#9a3412";
+        values.forEach((value, idx) => {
+          const x = pad.left + (idx / Math.max(1, count - 1)) * (chart.width - pad.left - pad.right);
+          const y = chart.height - pad.bottom - ((value - minY) / spanY) * (chart.height - pad.top - pad.bottom);
+          ctx.beginPath();
+          ctx.arc(x, y, 2.8, 0, Math.PI * 2);
+          ctx.fill();
+        });
+        ctx.fillStyle = "#5f6e69";
+        ctx.font = "12px Consolas";
+        ctx.textAlign = "right";
+        ctx.fillText(fmt(maxY, 2), pad.left - 8, pad.top + 4);
+        ctx.fillText(fmt(minY, 2), pad.left - 8, chart.height - pad.bottom + 4);
+        ctx.textAlign = "center";
+        ctx.fillText(String(labels[0] || ""), pad.left + 20, chart.height - 8);
+        ctx.fillText(String(labels[labels.length - 1] || ""), chart.width - pad.right - 20, chart.height - 8);
+      }
+
+      function showPoint(row) {
+        selectedPsIndex = Number(row[0]);
+        pointTitleEl.innerHTML = `<strong>Отражатель PS ${row[0]}</strong>`;
+        const items = [
+          ["Скорость LOS", fmt(row[3]) + " мм/год"],
+          ["Накопленное LOS-смещение", fmt(row[4]) + " мм"],
+          ["Макс. |смещение|", fmt(row[5]) + " мм"],
+          ["Риск", data.risk_labels[String(row[6])]],
+          ["Высота", fmt(row[7]) + " м"],
+          ["Координаты", fmt(row[1], 5) + ", " + fmt(row[2], 5)],
+        ];
+        pointGridEl.innerHTML = items.map(([label, value]) => `<div><span class="meta-label">${label}</span><strong>${value}</strong></div>`).join("");
+        pointHintEl.textContent = "Ряд ниже показывает накопленное смещение LOS по датам наблюдений. Это спутниковая деформация вдоль линии визирования, а не прямое нивелирование вертикальной просадки.";
+        drawSeries(row);
+      }
+
+      function popupHtml(row) {
+        return `<strong>PS ${row[0]}</strong><br>Скорость LOS: ${fmt(row[3])} мм/год<br>Накопленное смещение: ${fmt(row[4])} мм<br>Риск: ${data.risk_labels[String(row[6])]}`;
+      }
+
+      function updateLegend(mode, min, max) {
+        legendTitleEl.textContent = labels[mode];
+        legendMinEl.textContent = fmt(min, 2);
+        legendMidEl.textContent = fmt((min + max) / 2, 2);
+        legendMaxEl.textContent = fmt(max, 2);
+      }
+
+      function renderLayer() {
+        const mode = colorModeEl.value;
+        const minRisk = Number(riskFilterEl.value);
+        const radius = Number(pointSizeEl.value);
+        const [min, max] = rangeFor(mode);
+        if (layer) map.removeLayer(layer);
+        layer = L.layerGroup();
+        const renderer = L.canvas({ padding: 0.5 });
+        for (const row of data.points) {
+          const value = mode === "velocity" ? row[3] : row[4];
+          if (Number(row[6]) < minRisk) continue;
+          const marker = L.circleMarker([row[2], row[1]], {
+            renderer,
+            radius,
+            weight: 0.8,
+            color: "rgba(17, 37, 33, 0.18)",
+            fillColor: colorFor(value, min, max),
+            fillOpacity: 0.88,
+          });
+          marker.bindPopup(popupHtml(row), { closeButton: false });
+          marker.on("click", () => showPoint(row));
+          marker.addTo(layer);
+        }
+        layer.addTo(map);
+        updateLegend(mode, min, max);
+      }
+
+      buildStats();
+      buildTopList();
+      renderLayer();
+      drawSeries([]);
+      document.getElementById("resetFilter").addEventListener("click", () => {
+        pointSizeEl.value = "4";
+        riskFilterEl.value = "0";
+        colorModeEl.value = "velocity";
+        renderLayer();
+      });
+      colorModeEl.addEventListener("change", () => {
+        renderLayer();
+      });
+      riskFilterEl.addEventListener("change", renderLayer);
+      pointSizeEl.addEventListener("input", renderLayer);
+    })();
+  </script>
+</body>
+</html>

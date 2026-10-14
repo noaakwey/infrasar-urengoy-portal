@@ -1,0 +1,326 @@
+{
+  "summary": {
+    "n_ps_initial": 138501,
+    "n_ps_final": 24285,
+    "mean_velocity_mm_yr": 6.031886812252196e-08,
+    "std_velocity_mm_yr": 5.544753551483154,
+    "stamps_spec_variant": "vd_u-dm",
+    "recommended_product_variant": "vd_u-dm"
+  },
+  "cleaning_audit": {
+    "stamps_spec_variant": "vd_u-dm",
+    "recommended_variant": "vd_u-dm",
+    "variants": {
+      "vd_u-dm": {
+        "description": "StaMPS-compatible export: velocity v-d, time series u-dm",
+        "metrics": {
+          "period_years": 1.9383983572895278,
+          "all_points": {
+            "count": 24285,
+            "corr_velocity_vs_cumulative": 0.2024465258778624,
+            "opposite_sign_pct": 44.00247066090179,
+            "expected_cumulative_ratio_median": 0.5246772135443957,
+            "expected_cumulative_ratio_p05": -17.221951362873284,
+            "expected_cumulative_ratio_p95": 19.39881074992525,
+            "r2_median": 0.009677997790277004,
+            "r2_p05": 8.613003592472523e-05,
+            "rmse_median_mm": 20.911663055419922,
+            "rmse_p95_mm": 28.078327178955078
+          },
+          "abs_velocity_ge_10": {
+            "count": 1726,
+            "corr_velocity_vs_cumulative": 0.3373882246144493,
+            "opposite_sign_pct": 37.36964078794902,
+            "expected_cumulative_ratio_median": 0.305185625787898,
+            "expected_cumulative_ratio_p05": -1.5485944221252799,
+            "expected_cumulative_ratio_p95": 3.1926790746747606,
+            "r2_median": 0.08056360483169556,
+            "r2_p05": 0.046145420521497726,
+            "rmse_median_mm": 25.254776000976562,
+            "rmse_p95_mm": 29.93970489501953
+          },
+          "abs_velocity_ge_20": {
+            "count": 7,
+            "corr_velocity_vs_cumulative": 0.2855708629385423,
+            "opposite_sign_pct": 28.57142857142857,
+            "expected_cumulative_ratio_median": 0.2025567215382529,
+            "expected_cumulative_ratio_p05": -0.4912606041646275,
+            "expected_cumulative_ratio_p95": 0.6006536744295677,
+            "r2_median": 0.14115647971630096,
+            "r2_p05": 0.13210414350032806,
+            "rmse_median_mm": 29.034835815429688,
+            "rmse_p95_mm": 30.315677642822266
+          }
+        }
+      },
+      "vds_u-dms": {
+        "description": "Additional SCN-cleaned export: velocity v-ds, time series u-dms",
+        "metrics": {
+          "period_years": 1.9383983572895278,
+          "all_points": {
+            "count": 24285,
+            "corr_velocity_vs_cumulative": 0.9609157302741814,
+            "opposite_sign_pct": 47.61787111385629,
+            "expected_cumulative_ratio_median": 2.0637126627519358,
+            "expected_cumulative_ratio_p05": -23.28876456638349,
+            "expected_cumulative_ratio_p95": 24.42810812782928,
+            "r2_median": 0.005993455648422241,
+            "r2_p05": 5.0719147111522034e-05,
+            "rmse_median_mm": 29.776281356811523,
+            "rmse_p95_mm": 31.441450119018555
+          },
+          "abs_velocity_ge_10": {
+            "count": 1751,
+            "corr_velocity_vs_cumulative": 0.9916574944373189,
+            "opposite_sign_pct": 33.523700742432894,
+            "expected_cumulative_ratio_median": 0.1968568974152832,
+            "expected_cumulative_ratio_p05": -0.5334130052079458,
+            "expected_cumulative_ratio_p95": 2.5833105014812277,
+            "r2_median": 0.055780909955501556,
+            "r2_p05": 0.022957762703299522,
+            "rmse_median_mm": 29.718486785888672,
+            "rmse_p95_mm": 31.401077270507812
+          },
+          "abs_velocity_ge_20": {
+            "count": 9,
+            "corr_velocity_vs_cumulative": 0.9994679692823549,
+            "opposite_sign_pct": 0.0,
+            "expected_cumulative_ratio_median": 0.3813034754844781,
+            "expected_cumulative_ratio_p05": 0.36058575724200925,
+            "expected_cumulative_ratio_p95": 1.7502548989803344,
+            "r2_median": 0.12004701793193817,
+            "r2_p05": 0.1074453592300415,
+            "rmse_median_mm": 29.492877960205078,
+            "rmse_p95_mm": 30.1328182220459
+          }
+        }
+      }
+    }
+  },
+  "executive_summary": {
+    "monitoring_period": {
+      "start": "2020-01-12",
+      "end": "2021-12-20",
+      "acquisitions": 45
+    },
+    "product_variant": "vd_u-dm",
+    "counts_by_risk": {
+      "background": 15729,
+      "observation": 6830,
+      "elevated_attention": 1719,
+      "critical": 7
+    },
+    "max_abs_velocity_mm_yr": 24.09296989440918,
+    "p95_abs_velocity_mm_yr": 11.123998832702636,
+    "max_abs_cumulative_los_mm": 142.983154296875,
+    "latest_date": "2021-12-20",
+    "risk_thresholds_abs_velocity_mm_yr": {
+      "background": "< 5",
+      "observation": "5 - 10",
+      "elevated_attention": "10 - 20",
+      "critical": ">= 20"
+    }
+  },
+  "top_points": [
+    {
+      "ps_index": 21806,
+      "lon": 76.9444580078125,
+      "lat": 66.1518325805664,
+      "velocity_mm_yr": 24.09296989440918,
+      "cumulative_los_mm": 3.715351104736328,
+      "risk_label": "Критично"
+    },
+    {
+      "ps_index": 49703,
+      "lon": 76.65553283691406,
+      "lat": 66.12818908691406,
+      "velocity_mm_yr": -20.89592933654785,
+      "cumulative_los_mm": -9.837699890136719,
+      "risk_label": "Критично"
+    },
+    {
+      "ps_index": 21457,
+      "lon": 76.94464111328125,
+      "lat": 66.1523208618164,
+      "velocity_mm_yr": 20.81165313720703,
+      "cumulative_los_mm": 8.171396255493164,
+      "risk_label": "Критично"
+    },
+    {
+      "ps_index": 35251,
+      "lon": 76.7436294555664,
+      "lat": 66.1444091796875,
+      "velocity_mm_yr": -20.349605560302734,
+      "cumulative_los_mm": -27.15639877319336,
+      "risk_label": "Критично"
+    },
+    {
+      "ps_index": 20246,
+      "lon": 76.9407730102539,
+      "lat": 66.1544189453125,
+      "velocity_mm_yr": 20.243026733398438,
+      "cumulative_los_mm": -8.937875747680664,
+      "risk_label": "Критично"
+    },
+    {
+      "ps_index": 21895,
+      "lon": 76.9433822631836,
+      "lat": 66.15179443359375,
+      "velocity_mm_yr": 20.098501205444336,
+      "cumulative_los_mm": 15.41965389251709,
+      "risk_label": "Критично"
+    },
+    {
+      "ps_index": 6810,
+      "lon": 76.4556655883789,
+      "lat": 66.2158432006836,
+      "velocity_mm_yr": -20.042892456054688,
+      "cumulative_los_mm": 23.473094940185547,
+      "risk_label": "Критично"
+    },
+    {
+      "ps_index": 22061,
+      "lon": 76.94694519042969,
+      "lat": 66.15123748779297,
+      "velocity_mm_yr": 19.991586685180664,
+      "cumulative_los_mm": -9.589197158813477,
+      "risk_label": "Повышенное внимание"
+    },
+    {
+      "ps_index": 20345,
+      "lon": 76.94005584716797,
+      "lat": 66.15435791015625,
+      "velocity_mm_yr": 19.927785873413086,
+      "cumulative_los_mm": -7.131697654724121,
+      "risk_label": "Повышенное внимание"
+    },
+    {
+      "ps_index": 20344,
+      "lon": 76.94013977050781,
+      "lat": 66.15435028076172,
+      "velocity_mm_yr": 19.693578720092773,
+      "cumulative_los_mm": -5.928231716156006,
+      "risk_label": "Повышенное внимание"
+    },
+    {
+      "ps_index": 21456,
+      "lon": 76.9447250366211,
+      "lat": 66.15231323242188,
+      "velocity_mm_yr": 19.443696975708008,
+      "cumulative_los_mm": -18.73721694946289,
+      "risk_label": "Повышенное внимание"
+    },
+    {
+      "ps_index": 20434,
+      "lon": 76.94139099121094,
+      "lat": 66.15411376953125,
+      "velocity_mm_yr": 19.424497604370117,
+      "cumulative_los_mm": 24.65035057067871,
+      "risk_label": "Повышенное внимание"
+    },
+    {
+      "ps_index": 20342,
+      "lon": 76.94144439697266,
+      "lat": 66.15423583984375,
+      "velocity_mm_yr": 19.37526512145996,
+      "cumulative_los_mm": 24.42633056640625,
+      "risk_label": "Повышенное внимание"
+    },
+    {
+      "ps_index": 21977,
+      "lon": 76.94700622558594,
+      "lat": 66.15135955810547,
+      "velocity_mm_yr": 19.37242317199707,
+      "cumulative_los_mm": 9.936741828918457,
+      "risk_label": "Повышенное внимание"
+    },
+    {
+      "ps_index": 20251,
+      "lon": 76.9391098022461,
+      "lat": 66.1545639038086,
+      "velocity_mm_yr": 19.304140090942383,
+      "cumulative_los_mm": -11.548128128051758,
+      "risk_label": "Повышенное внимание"
+    },
+    {
+      "ps_index": 25437,
+      "lon": 76.94774627685547,
+      "lat": 66.14521026611328,
+      "velocity_mm_yr": 19.21828269958496,
+      "cumulative_los_mm": 7.7401123046875,
+      "risk_label": "Повышенное внимание"
+    },
+    {
+      "ps_index": 21975,
+      "lon": 76.94718170166016,
+      "lat": 66.1513442993164,
+      "velocity_mm_yr": 19.11225128173828,
+      "cumulative_los_mm": 17.47021484375,
+      "risk_label": "Повышенное внимание"
+    },
+    {
+      "ps_index": 19988,
+      "lon": 76.93999481201172,
+      "lat": 66.15486907958984,
+      "velocity_mm_yr": 19.065471649169922,
+      "cumulative_los_mm": 7.166934967041016,
+      "risk_label": "Повышенное внимание"
+    },
+    {
+      "ps_index": 20346,
+      "lon": 76.93982696533203,
+      "lat": 66.15437316894531,
+      "velocity_mm_yr": 19.02029037475586,
+      "cumulative_los_mm": -9.725133895874023,
+      "risk_label": "Повышенное внимание"
+    },
+    {
+      "ps_index": 22063,
+      "lon": 76.94449615478516,
+      "lat": 66.15144348144531,
+      "velocity_mm_yr": 18.995094299316406,
+      "cumulative_los_mm": 17.044261932373047,
+      "risk_label": "Повышенное внимание"
+    },
+    {
+      "ps_index": 25371,
+      "lon": 76.94781494140625,
+      "lat": 66.14533233642578,
+      "velocity_mm_yr": 18.957813262939453,
+      "cumulative_los_mm": 7.214012145996094,
+      "risk_label": "Повышенное внимание"
+    },
+    {
+      "ps_index": 6738,
+      "lon": 76.45572662353516,
+      "lat": 66.2159652709961,
+      "velocity_mm_yr": -18.890239715576172,
+      "cumulative_los_mm": 28.373695373535156,
+      "risk_label": "Повышенное внимание"
+    },
+    {
+      "ps_index": 22151,
+      "lon": 76.94444274902344,
+      "lat": 66.15132141113281,
+      "velocity_mm_yr": 18.851659774780273,
+      "cumulative_los_mm": 13.568870544433594,
+      "risk_label": "Повышенное внимание"
+    },
+    {
+      "ps_index": 33455,
+      "lon": 76.6654052734375,
+      "lat": 66.15399932861328,
+      "velocity_mm_yr": -18.754526138305664,
+      "cumulative_los_mm": 3.784712791442871,
+      "risk_label": "Повышенное внимание"
+    },
+    {
+      "ps_index": 33384,
+      "lon": 76.66444396972656,
+      "lat": 66.15420532226562,
+      "velocity_mm_yr": -18.72348403930664,
+      "cumulative_los_mm": -12.835508346557617,
+      "risk_label": "Повышенное внимание"
+    }
+  ]
+}
